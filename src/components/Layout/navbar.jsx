@@ -6,44 +6,72 @@ import cart from "../../assets/images/Empty Cart.png";
 import { Link } from "react-router-dom";
 
 class Navbar extends Component {
+  constructor() {
+    super();
+    this.state = {
+      iscurrencyDroprdownOpen: false,
+      active: window.location.pathname === "/" ? "all" : window.location.pathname.replace("/", "")
+    };
+    this.toggleDropdown = this.toggleDropdown.bind(this);
+  }
+
+  toggleDropdown() {
+    this.setState({
+      iscurrencyDroprdownOpen: !this.state.iscurrencyDroprdownOpen,
+    });
+  }
+
   render() {
-    const { activeCategory, changeCategory } = this.props;
+    
     return (
       <NavWrapper>
         <CategoryList>
-            <Link to="/?category=women">
-            <CategoryListItem
-            active={activeCategory === "women" ? true : false}
-            onClick={() => changeCategory("women")}
-          >
-            women
-          </CategoryListItem>
+          {this.props.categories.map((cat, i) => (
+            <Link to={`/${cat === "all" ? "" : cat}`} key={i}>
+              <CategoryListItem
+                active={this.state.active === cat ? true : false}
+              >
+                {cat}
+              </CategoryListItem>
             </Link>
-         
-         <Link to="/?category=men">
-         <CategoryListItem
-            active={activeCategory === "men" ? true : false}
-            onClick={() => changeCategory("men")}
-          >
-            men
-          </CategoryListItem>
-         </Link> 
-         <Link to="/?category=kids">
-         <CategoryListItem
-            active={activeCategory === "kids" ? true : false}
-            onClick={() => changeCategory("kids")}
-          >
-            kids
-          </CategoryListItem>
-         </Link>
-          
+          ))}
         </CategoryList>
-        <Link to="/"><LogoWrapper>
-          <img src={logo} alt="logo" />
-        </LogoWrapper></Link>
+        <Link to="/">
+          <LogoWrapper>
+            <img src={logo} alt="logo" />
+          </LogoWrapper>
+        </Link>
         <CurrencyCartWrapper>
-          <p>$</p>
-          <Cart src={cart} />
+          <div className="content">
+            {this.state.iscurrencyDroprdownOpen && (
+              <CurrencyDropdown>
+                <ul>
+                  <li>$ USD</li>
+                  <li>€ EUR</li>
+                  <li>¥ JPY</li>
+                </ul>
+              </CurrencyDropdown>
+            )}
+            <p onClick={this.toggleDropdown}>
+              $
+              <DropdownArrow
+                isOpen={this.state.iscurrencyDroprdownOpen}
+                width="8"
+                height="4"
+                viewBox="0 0 8 4"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1 3.5L4 0.5L7 3.5"
+                  stroke="black"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </DropdownArrow>
+            </p>
+            <Cart src={cart} />
+          </div>
         </CurrencyCartWrapper>
       </NavWrapper>
     );
@@ -62,6 +90,10 @@ const NavWrapper = styled.nav`
   justify-content: space-between;
   background: #fff;
   z-index: 50;
+
+  p {
+    cursor: pointer;
+  }
 `;
 
 const CategoryList = styled.ul`
@@ -74,8 +106,8 @@ const CategoryList = styled.ul`
 const CategoryListItem = styled.li`
   padding: 0px 15px 30px;
   position: relative;
-  color: ${props => (props.active ? colors.primary : colors.dark)};
-  font-weight: ${props => (props.active ? "500" : "400")};
+  color: ${(props) => (props.active ? colors.primary : colors.dark)};
+  font-weight: ${(props) => (props.active ? "500" : "400")};
   cursor: pointer;
 
   &::after {
@@ -87,7 +119,7 @@ const CategoryListItem = styled.li`
     height: 2px;
     width: 100%;
     border-radius: 5px;
-    opacity: ${props => (props.active ? "1" : "0")};
+    opacity: ${(props) => (props.active ? "1" : "0")};
     transition: opacity 0.2s ease-in-out;
   }
 `;
@@ -97,7 +129,12 @@ const CurrencyCartWrapper = styled.div`
   justify-content: end;
   font-size: 17px;
   font-weight: 500;
-  align-items: start;
+
+  .content {
+    display: inline-flex;
+    align-items: start;
+    position: relative;
+  }
 `;
 
 const LogoWrapper = styled.div`
@@ -113,4 +150,32 @@ const Cart = styled.img`
   margin-left: 25px;
   width: 20px;
   cursor: pointer;
+`;
+
+const DropdownArrow = styled.svg`
+  transform: ${(props) => (props.isOpen ? "rotate(0deg)" : "rotate(180deg)")};
+  margin-left: 8px;
+  transition: transform 0.1s ease-in-out;
+`;
+
+const CurrencyDropdown = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  filter: drop-shadow(0px 4px 35px rgba(168, 172, 176, 0.24));
+  background: #fff;
+  padding: 20px 0;
+  width: 150%;
+  margin-top: 10px;
+  ul {
+    list-style: none;
+    li {
+      padding: 10px 25px;
+      cursor: pointer;
+      &:hover {
+        background: #eeeeee;
+      }
+    }
+  }
 `;

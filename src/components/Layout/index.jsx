@@ -10,6 +10,7 @@ class Layout extends Component {
         <Navbar
           activeCategory={this.props.activeCategory}
           changeCategory={this.props.changeCategory}
+          categories={this.props.categories}
         />
         <MainContent>{this.props.children}</MainContent>
       </div>

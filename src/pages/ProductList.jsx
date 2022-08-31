@@ -1,3 +1,5 @@
+import { gql } from "@apollo/client";
+import { graphql } from '@apollo/client/react/hoc';
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -6,10 +8,10 @@ import { colors, spacing } from "../styles/_vars";
 
 class ProductList extends Component {
   render() {
-    const { activeCategory } = this.props;
+    let category = window.location.pathname === "/" ? "all" : window.location.pathname.replace("/", "")
     return (
       <div>
-        <CategoryTitle>{activeCategory}</CategoryTitle>
+        <CategoryTitle>{category}</CategoryTitle>
         <ProductGrid>
           {products.map(({ name, img, price }, i) => (
             <Link to={`/products/0${i+1}`} key={i}>
@@ -53,7 +55,23 @@ class ProductList extends Component {
   }
 }
 
-export default ProductList;
+const GET_PRODUCTS = gql`
+query {
+  categories {
+    name
+    products {
+      id
+      name
+      inStock
+      gallery
+      category
+      brand
+    }
+  }
+}
+`
+  
+export default graphql(GET_PRODUCTS)(ProductList);
 
 const CategoryTitle = styled.h1`
   font-size: 40px;

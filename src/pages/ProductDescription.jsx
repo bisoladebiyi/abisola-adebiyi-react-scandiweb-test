@@ -125,7 +125,7 @@ const ProductContent = styled.div`
   }
 `;
 
-const ProductSizes = styled.div`
+export const ProductSizes = styled.div`
   margin-top: 30px;
   h4 {
     font-family: Roboto Condensed;
@@ -138,7 +138,7 @@ const ProductSizes = styled.div`
   }
 `;
 
-const SizeBtn = styled.button`
+export const SizeBtn = styled.button`
   all: unset;
   font-family: Source Sans Pro;
   border: 1px solid ${colors.dark};
@@ -152,7 +152,7 @@ const SizeBtn = styled.button`
   cursor: pointer;
 `;
 
-const ProductColors = styled.div`
+export const ProductColors = styled.div`
   margin-top: 20px;
   h4 {
     font-family: Roboto Condensed;
@@ -165,7 +165,7 @@ const ProductColors = styled.div`
   }
 `;
 
-const ColorBtn = styled.button`
+export const ColorBtn = styled.button`
   all: unset;
   background: ${props => props.color};
   border: 1px solid ${props => props.selected ? colors.primary : "transparent"};
