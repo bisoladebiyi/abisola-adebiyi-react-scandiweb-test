@@ -5,18 +5,16 @@ import { spacing } from "../../styles/_vars";
 
 class Layout extends Component {
   render() {
+    const { categories, currencies, children, active } = this.props;
     return (
       <div>
-        <Navbar
-          activeCategory={this.props.activeCategory}
-          changeCategory={this.props.changeCategory}
-          categories={this.props.categories}
-        />
-        <MainContent>{this.props.children}</MainContent>
+        <Navbar categories={categories} currencies={currencies} active={active} />
+        <MainContent>{children}</MainContent>
       </div>
     );
   }
 }
+
 
 export default Layout;
 
