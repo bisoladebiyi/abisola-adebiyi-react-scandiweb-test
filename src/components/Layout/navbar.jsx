@@ -1,116 +1,170 @@
 import React, { Component } from "react";
-import styled from "styled-components";
-import { colors, spacing } from "../../styles/_vars";
 import logo from "../../assets/images/logo transparent.png";
 import cart from "../../assets/images/Empty Cart.png";
 import { Link } from "react-router-dom";
+import {
+  Cart,
+  CategoryList,
+  CategoryListItem,
+  CurrencyCartWrapper,
+  CurrencyDropdown,
+  DropdownArrow,
+  LogoWrapper,
+  MenuBar,
+  NavWrapper,
+} from "../../utils/styledComponents";
+import { changeCurrency } from "../../redux/feature/cartSlice";
+import { connect } from "react-redux";
+import CartOverlay from "../CartOverlay";
 
 class Navbar extends Component {
+  constructor() {
+    super();
+    this.state = {
+      iscurrencyDroprdownOpen: false,
+      isMenuOpen: false,
+      isCartOverlayOpen: false,
+    };
+    this.toggleDropdown = this.toggleDropdown.bind(this);
+    this.toggleMenu = this.toggleMenu.bind(this);
+    this.toggleOverlay = this.toggleOverlay.bind(this);
+    this.handleOutsideClick = this.handleOutsideClick.bind(this);
+  }
+
+  toggleDropdown() {
+    if (!this.state.iscurrencyDroprdownOpen) {
+      document.addEventListener("click", this.handleOutsideClick, false);
+    } else {
+      document.removeEventListener("click", this.handleOutsideClick, false);
+    }
+    this.setState({
+      ...this.state,
+      iscurrencyDroprdownOpen: !this.state.iscurrencyDroprdownOpen,
+    });
+  }
+
+  toggleOverlay() {
+    if (!this.state.isCartOverlayOpen) {
+      document.addEventListener("click", this.handleOutsideClick, false);
+    } else {
+      document.removeEventListener("click", this.handleOutsideClick, false);
+    }
+    this.setState({
+      ...this.state,
+      isCartOverlayOpen: !this.state.isCartOverlayOpen,
+    });
+  }
+  //function for click out logic
+  handleOutsideClick = (e) => {
+    if (!this.node.contains(e.target) && !this.state.iscurrencyDroprdownOpen)
+      this.toggleOverlay();
+    if (!this.node.contains(e.target) && !this.state.isCartOverlayOpen)
+      this.toggleDropdown();
+  };
+
+  toggleMenu() {
+    this.setState({
+      ...this.state,
+      isMenuOpen: !this.state.isMenuOpen,
+    });
+  }
+
   render() {
-    const { activeCategory, changeCategory } = this.props;
+    const {
+      categories,
+      currencies,
+      active,
+      currency,
+      changeCurrency,
+      cartCount,
+    } = this.props;
+
     return (
       <NavWrapper>
-        <CategoryList>
-            <Link to="/?category=women">
-            <CategoryListItem
-            active={activeCategory === "women" ? true : false}
-            onClick={() => changeCategory("women")}
-          >
-            women
-          </CategoryListItem>
+        {/* nav links and hambuger menu  */}
+        <MenuBar onClick={this.toggleMenu} isMenuOpen={this.state.isMenuOpen}>
+          <div></div>
+          <div></div>
+        </MenuBar>
+        <CategoryList isMenuOpen={this.state.isMenuOpen}>
+          {categories?.map((cat, i) => (
+            <Link to={`/${cat === "all" ? "" : cat}`} key={i}>
+              <CategoryListItem
+                onClick={this.toggleMenu}
+                active={active === cat ? true : false}
+              >
+                {cat}
+              </CategoryListItem>
             </Link>
-         
-         <Link to="/?category=men">
-         <CategoryListItem
-            active={activeCategory === "men" ? true : false}
-            onClick={() => changeCategory("men")}
-          >
-            men
-          </CategoryListItem>
-         </Link> 
-         <Link to="/?category=kids">
-         <CategoryListItem
-            active={activeCategory === "kids" ? true : false}
-            onClick={() => changeCategory("kids")}
-          >
-            kids
-          </CategoryListItem>
-         </Link>
-          
+          ))}
         </CategoryList>
-        <Link to="/"><LogoWrapper>
-          <img src={logo} alt="logo" />
-        </LogoWrapper></Link>
-        <CurrencyCartWrapper>
-          <p>$</p>
-          <Cart src={cart} />
+        {/* logo  */}
+        <Link to="/">
+          <LogoWrapper>
+            <img src={logo} alt="logo" />
+          </LogoWrapper>
+        </Link>
+        {/* currency and cart  */}
+        <CurrencyCartWrapper
+          ref={(node) => {
+            this.node = node;
+          }}
+        >
+          <div className="content">
+            {this.state.iscurrencyDroprdownOpen && (
+              <CurrencyDropdown>
+                <ul>
+                  {currencies.map(({ label, symbol }) => (
+                    <li key={symbol} onClick={() => changeCurrency(symbol)}>
+                      {symbol} {label}
+                    </li>
+                  ))}
+                </ul>
+              </CurrencyDropdown>
+            )}
+            <p onClick={this.toggleDropdown}>
+              {currency}
+              <DropdownArrow
+                isOpen={this.state.iscurrencyDroprdownOpen}
+                width="8"
+                height="4"
+                viewBox="0 0 8 4"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1 3.5L4 0.5L7 3.5"
+                  stroke="black"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </DropdownArrow>
+            </p>
+            <Cart count={cartCount} onClick={this.toggleOverlay}>
+              <img src={cart} alt="" />
+            </Cart>
+          </div>
+          {/* cart overlay  */}
+          {this.state.isCartOverlayOpen && (
+            <CartOverlay count={cartCount} toggle={this.toggleOverlay} />
+          )}
         </CurrencyCartWrapper>
       </NavWrapper>
     );
   }
 }
 
-export default Navbar;
+const mapStateToProps = (state) => {
+  return {
+    currency: state.currency,
+    cartCount: state.cartCount,
+  };
+};
 
-const NavWrapper = styled.nav`
-  width: 100%;
-  position: fixed;
-  padding: 30px ${spacing.lg} 0px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  align-items: start;
-  justify-content: space-between;
-  background: #fff;
-  z-index: 50;
-`;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    changeCurrency: (symbol) => dispatch(changeCurrency(symbol)),
+  };
+};
 
-const CategoryList = styled.ul`
-  list-style: none;
-  display: flex;
-  align-items: center;
-  text-transform: uppercase;
-  font-size: 14px;
-`;
-const CategoryListItem = styled.li`
-  padding: 0px 15px 30px;
-  position: relative;
-  color: ${props => (props.active ? colors.primary : colors.dark)};
-  font-weight: ${props => (props.active ? "500" : "400")};
-  cursor: pointer;
-
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    background: ${colors.primary};
-    height: 2px;
-    width: 100%;
-    border-radius: 5px;
-    opacity: ${props => (props.active ? "1" : "0")};
-    transition: opacity 0.2s ease-in-out;
-  }
-`;
-
-const CurrencyCartWrapper = styled.div`
-  display: flex;
-  justify-content: end;
-  font-size: 17px;
-  font-weight: 500;
-  align-items: start;
-`;
-
-const LogoWrapper = styled.div`
-  margin-top: -5px;
-  display: flex;
-  justify-content: center;
-
-  img {
-    width: 40px;
-  }
-`;
-const Cart = styled.img`
-  margin-left: 25px;
-  width: 20px;
-  cursor: pointer;
-`;
+export default connect(mapStateToProps, mapDispatchToProps)(Navbar);

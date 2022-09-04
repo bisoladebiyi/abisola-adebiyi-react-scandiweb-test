@@ -9,9 +9,7 @@ class Error extends Component {
       <ErrorPageWrapper>
         <div>
           <p>404</p>
-          <p>
-            Oops! I think you're lost 😓 
-          </p>
+          <p>Oops! I think you're lost 😓</p>
           <Link to="/">Go to home</Link>
         </div>
       </ErrorPageWrapper>

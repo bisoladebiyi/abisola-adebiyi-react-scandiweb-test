@@ -1,24 +1,18 @@
 import React, { Component } from "react";
 import Navbar from "./navbar";
-import styled from "styled-components";
-import { spacing } from "../../styles/_vars";
+import { AppWrapper, MainContent } from "../../utils/styledComponents";
 
 class Layout extends Component {
   render() {
+    const { categories, currencies, children, active } = this.props;
     return (
-      <div>
-        <Navbar
-          activeCategory={this.props.activeCategory}
-          changeCategory={this.props.changeCategory}
-        />
-        <MainContent>{this.props.children}</MainContent>
-      </div>
+      <AppWrapper>
+        <Navbar categories={categories} currencies={currencies} active={active} />
+        <MainContent>{children}</MainContent>
+      </AppWrapper>
     );
   }
 }
 
-export default Layout;
 
-const MainContent = styled.main`
-  padding: 0 ${spacing.lg};
-`;
+export default Layout;
