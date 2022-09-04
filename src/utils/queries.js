@@ -12,13 +12,13 @@ export const GET_CATEGORIES = gql`
         category
         brand
         attributes {
+          id
+          name
+          items {
             id
-            name
-            items {
-              id
-              value
-              displayValue
-            }
+            value
+            displayValue
+          }
         }
         prices {
           currency {

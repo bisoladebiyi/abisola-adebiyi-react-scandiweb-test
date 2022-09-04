@@ -1,13 +1,20 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import { updateAttr } from "../redux/feature/cartSlice";
 import {
   CartItem,
   ColorBtn,
+  ControlLeft,
+  ControlRight,
+  Controls,
   ItemColors,
   ItemImgWrapper,
   ItemInfo,
   ItemSizes,
   QtyBtn,
   QtyWrapper,
+  RemoveBtn,
   SizeBtn,
 } from "../utils/styledComponents";
 
@@ -16,9 +23,10 @@ class SingleCartItem extends Component {
     super();
     this.state = {
       selectedAttr: {},
+      imgIndex: 0,
     };
   }
-
+  //   check for selected attriutes on component mount
   componentDidMount() {
     let product = this.props.cart?.find((x) => x.id === this.props.id);
     this.setState({
@@ -27,15 +35,33 @@ class SingleCartItem extends Component {
         : this.state.selectedAttr,
     });
   }
-
+  //   check for selected attriutes on component update
   componentDidUpdate(prevProps) {
-    if (prevProps.attributes !== this.props.attributes) {
+    if (prevProps !== this.props) {
       let product = this.props.cart?.find((x) => x.id === this.props.id);
       this.setState({
         selectedAttr: product?.selected
           ? product?.selected
           : this.state.selectedAttr,
       });
+    }
+  }
+  //   handle image slider
+  changeImg(max, forward) {
+    if (this.state.imgIndex === 0 && !forward) {
+      this.setState({ ...this.state, imgIndex: max - 1 });
+      return;
+    }
+    if (this.state.imgIndex === max - 1 && forward) {
+      this.setState({ ...this.state, imgIndex: 0 });
+      return;
+    }
+    if (forward) {
+      this.setState({ ...this.state, imgIndex: this.state.imgIndex + 1 });
+      return;
+    } else {
+      this.setState({ ...this.state, imgIndex: this.state.imgIndex - 1 });
+      return;
     }
   }
   render() {
@@ -49,13 +75,24 @@ class SingleCartItem extends Component {
       gallery,
       handleItemQuantity,
       attributes,
+      updateAttr,
+      category,
+      overlay,
+      removeFromCart,
     } = this.props;
-    const { selectedAttr } = this.state;
+    const { selectedAttr, imgIndex } = this.state;
     return (
-      <CartItem>
-        <ItemInfo>
-          <h2 className="brand">{brand}</h2>
-          <h2 className="name">{name}</h2>
+      <CartItem overlay={overlay}>
+        {!overlay && (
+          <RemoveBtn onClick={() => removeFromCart(id)}>X</RemoveBtn>
+        )}
+        <ItemInfo overlay={overlay}>
+          <Link to={`/${category}/${id}`}>
+            <div>
+              <h2 className="brand">{brand}</h2>
+              <h2 className="name">{name}</h2>
+            </div>
+          </Link>
           <p className="price">
             {currency}
             {price.amount * qty}
@@ -63,6 +100,7 @@ class SingleCartItem extends Component {
           {attributes.map((attr, i) => {
             return attr.id !== "Color" ? (
               <ItemSizes
+                overlay={overlay}
                 style={{ marginTop: i > 0 ? "20px" : "0" }}
                 key={attr.id}
               >
@@ -70,10 +108,9 @@ class SingleCartItem extends Component {
                 <div>
                   {attr.items.map((item, i) => (
                     <SizeBtn
+                      overlay={overlay}
                       onClick={() =>
-                        this.updateAttr({
-                          [attr.id]: item.id,
-                        })
+                        updateAttr({ id, newAttr: { [attr.id]: item.id } })
                       }
                       selected={
                         selectedAttr[attr.id]
@@ -89,6 +126,7 @@ class SingleCartItem extends Component {
               </ItemSizes>
             ) : (
               <ItemColors
+                overlay={overlay}
                 style={{ marginTop: i > 0 ? "20px" : "0" }}
                 colorsNo={attr.items.length}
                 key={attr.id}
@@ -97,10 +135,9 @@ class SingleCartItem extends Component {
                 <div>
                   {attr.items.map((item, i) => (
                     <ColorBtn
+                      overlay={overlay}
                       onClick={() =>
-                        this.updateAttr({
-                          [attr.id]: item.id,
-                        })
+                        updateAttr({ id, newAttr: { [attr.id]: item.id } })
                       }
                       color={item.value}
                       selected={
@@ -116,18 +153,64 @@ class SingleCartItem extends Component {
             );
           })}
         </ItemInfo>
-        <ItemImgWrapper>
-          <QtyWrapper>
-            <QtyBtn onClick={() => handleItemQuantity({ id, add: true })}>
+        <ItemImgWrapper overlay={overlay}>
+          <QtyWrapper overlay={overlay}>
+            <QtyBtn
+              overlay={overlay}
+              onClick={() => handleItemQuantity({ id, add: true })}
+            >
               +
             </QtyBtn>
             <p>{qty}</p>
-            <QtyBtn onClick={() => handleItemQuantity({ id, subtract: true })}>
+            <QtyBtn
+              overlay={overlay}
+              onClick={() => handleItemQuantity({ id, subtract: true })}
+            >
               -
             </QtyBtn>
           </QtyWrapper>
           <figure>
-            <img src={gallery[0]} alt="" />
+            <img src={gallery[imgIndex]} alt="" />
+            {gallery.length > 1 && (
+              <Controls overlay={overlay}>
+                <ControlLeft onClick={() => this.changeImg(gallery.length)}>
+                  <svg
+                    width="8"
+                    height="14"
+                    viewBox="0 0 8 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M7.25 1.06857L1.625 6.6876L7.25 12.3066"
+                      stroke="white"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </ControlLeft>
+                <ControlRight
+                  onClick={() => this.changeImg(gallery.length, true)}
+                >
+                  <svg
+                    width="8"
+                    height="14"
+                    viewBox="0 0 8 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M0.75 1.06857L6.375 6.6876L0.75 12.3066"
+                      stroke="white"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </ControlRight>
+              </Controls>
+            )}
           </figure>
         </ItemImgWrapper>
       </CartItem>
@@ -135,4 +218,9 @@ class SingleCartItem extends Component {
   }
 }
 
-export default SingleCartItem;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updateAttr: (data) => dispatch(updateAttr(data)),
+  };
+};
+export default connect(null, mapDispatchToProps)(SingleCartItem);

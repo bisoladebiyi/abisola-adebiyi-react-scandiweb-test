@@ -28,6 +28,12 @@ const cartSlice = createSlice({
       );
       state.qtyTotal = state.qtyTotal - removedItem?.qty;
     },
+    updateAttr(state, payload) {
+      let cartItem = state.cart.find((item) => item.id === payload.payload.id);
+      cartItem.selected = { ...cartItem.selected, ...payload.payload.newAttr };
+
+      state.cart = [...state.cart];
+    },
     handleItemQuantity(state, payload) {
       let x = state.cart.find((item) => item.id === payload.payload.id);
       if (x.qty === 1 && payload.payload.subtract) {
@@ -47,7 +53,12 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, changeCurrency, handleItemQuantity, removeFromCart } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  changeCurrency,
+  handleItemQuantity,
+  removeFromCart,
+  updateAttr,
+} = cartSlice.actions;
 
 export default cartSlice.reducer;

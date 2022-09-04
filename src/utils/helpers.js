@@ -10,3 +10,5 @@ export const withRouter = (Component) => {
 
   return ComponentWithRouterProp;
 };
+
+// hack for withRouter since depreciated 

@@ -2,18 +2,34 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { AddToCartBtn, Product } from "../utils/styledComponents";
 
-export default class ProductCard extends Component {
+class ProductCard extends Component {
+    // add or remove from cart 
+    handleCartItem(id, data, isInCart) {
+        if (isInCart) {
+          this.props.removeFromCart(id);
+        } else {
+          this.props.addToCart(data);
+        }
+      }
   render() {
-    const { cartItemIds, product, addToCart, currency } = this.props;
-    const { id, name, prices, gallery, brand } = product;
-    let rightPrice = prices.find((x) => x.currency.symbol === currency);
+    const { cartItemIds, product, currency } = this.props;
+    const { id, name, prices, gallery, brand, inStock } = product;
+    let rightPrice = prices.find((x) => x.currency.symbol === currency);  // get correct price based on currency
     return (
-      <Product>
+      <Product inStock={inStock}>
         <figure>
           <img src={gallery[0]} alt="" />
          <Link to="#"><AddToCartBtn
-            disabled={cartItemIds?.includes(id)}
-            onClick={() => addToCart({...product, qty: 1})}
+            added={cartItemIds?.includes(id)}
+            onClick={() => this.handleCartItem(
+                product.id,
+                {
+                  ...product,
+                  qty: 1,
+                  selected: {},
+                },
+                cartItemIds.includes(product.id)
+              )}
           >
             {cartItemIds.includes(id) ? (
               <svg
@@ -68,3 +84,6 @@ export default class ProductCard extends Component {
     );
   }
 }
+
+
+export default ProductCard

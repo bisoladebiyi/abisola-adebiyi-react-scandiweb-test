@@ -27,7 +27,7 @@ class ProductDescription extends Component {
       mainImg: "",
     };
   }
-
+  // get selected attributes, set default display img on component mount
   componentDidMount() {
     if (this.props.data.product) {
       let product = this.props.cart?.find(
@@ -42,7 +42,7 @@ class ProductDescription extends Component {
       });
     }
   }
-
+  // get selected attributes, set default display img on component update
   componentDidUpdate(prevProps) {
     if (prevProps.data.product !== this.props.data.product) {
       let product = this.props.cart?.find(
@@ -57,18 +57,18 @@ class ProductDescription extends Component {
       });
     }
   }
-
+  // update attributes selected
   updateAttr(selectedAttr) {
     this.setState({
       ...this.state,
       selectedAttr: { ...this.state.selectedAttr, ...selectedAttr },
     });
   }
-
+  // display selected img
   selectImg(img) {
     this.setState({ ...this.state, mainImg: img });
   }
-
+  // add or remove from cart
   handleCartItem(id, data, isInCart) {
     if (isInCart) {
       this.props.removeFromCart(id);
@@ -81,12 +81,13 @@ class ProductDescription extends Component {
     const { data, currency, cartItemIds } = this.props;
     const { mainImg, selectedAttr } = this.state;
     const { product } = data;
-    let price = product?.prices.find((x) => x.currency.symbol === currency);
+    let price = product?.prices.find((x) => x.currency.symbol === currency); // find price based on currency
 
     return (
       <>
         {product && (
           <ProductWrapper>
+            {/* images  */}
             <ProductImagesWrapper>
               <div>
                 {product.gallery.map((img) => (
@@ -103,6 +104,7 @@ class ProductDescription extends Component {
                 <img src={mainImg} alt="" />
               </LargeImg>
             </ProductImagesWrapper>
+            {/* name, price and attributes  */}
             <ProductContent>
               <h2 className="brand">{product.brand}</h2>
               <h2 className="name">{product.name}</h2>
@@ -161,6 +163,7 @@ class ProductDescription extends Component {
                   {price.amount}
                 </p>
               </ProductPriceWrapper>
+              {/* add or remove from cart button  */}
               <AddToCart
                 onClick={() =>
                   this.handleCartItem(

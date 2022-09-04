@@ -10,23 +10,62 @@ import {
   CurrencyDropdown,
   DropdownArrow,
   LogoWrapper,
+  MenuBar,
   NavWrapper,
 } from "../../utils/styledComponents";
 import { changeCurrency } from "../../redux/feature/cartSlice";
 import { connect } from "react-redux";
+import CartOverlay from "../CartOverlay";
 
 class Navbar extends Component {
   constructor() {
     super();
     this.state = {
       iscurrencyDroprdownOpen: false,
+      isMenuOpen: false,
+      isCartOverlayOpen: false,
     };
     this.toggleDropdown = this.toggleDropdown.bind(this);
+    this.toggleMenu = this.toggleMenu.bind(this);
+    this.toggleOverlay = this.toggleOverlay.bind(this);
+    this.handleOutsideClick = this.handleOutsideClick.bind(this);
   }
 
   toggleDropdown() {
+    if (!this.state.iscurrencyDroprdownOpen) {
+      document.addEventListener("click", this.handleOutsideClick, false);
+    } else {
+      document.removeEventListener("click", this.handleOutsideClick, false);
+    }
     this.setState({
+      ...this.state,
       iscurrencyDroprdownOpen: !this.state.iscurrencyDroprdownOpen,
+    });
+  }
+
+  toggleOverlay() {
+    if (!this.state.isCartOverlayOpen) {
+      document.addEventListener("click", this.handleOutsideClick, false);
+    } else {
+      document.removeEventListener("click", this.handleOutsideClick, false);
+    }
+    this.setState({
+      ...this.state,
+      isCartOverlayOpen: !this.state.isCartOverlayOpen,
+    });
+  }
+  //function for click out logic
+  handleOutsideClick = (e) => {
+    if (!this.node.contains(e.target) && !this.state.iscurrencyDroprdownOpen)
+      this.toggleOverlay();
+    if (!this.node.contains(e.target) && !this.state.isCartOverlayOpen)
+      this.toggleDropdown();
+  };
+
+  toggleMenu() {
+    this.setState({
+      ...this.state,
+      isMenuOpen: !this.state.isMenuOpen,
     });
   }
 
@@ -42,21 +81,35 @@ class Navbar extends Component {
 
     return (
       <NavWrapper>
-        <CategoryList>
+        {/* nav links and hambuger menu  */}
+        <MenuBar onClick={this.toggleMenu} isMenuOpen={this.state.isMenuOpen}>
+          <div></div>
+          <div></div>
+        </MenuBar>
+        <CategoryList isMenuOpen={this.state.isMenuOpen}>
           {categories?.map((cat, i) => (
             <Link to={`/${cat === "all" ? "" : cat}`} key={i}>
-              <CategoryListItem active={active === cat ? true : false}>
+              <CategoryListItem
+                onClick={this.toggleMenu}
+                active={active === cat ? true : false}
+              >
                 {cat}
               </CategoryListItem>
             </Link>
           ))}
         </CategoryList>
+        {/* logo  */}
         <Link to="/">
           <LogoWrapper>
             <img src={logo} alt="logo" />
           </LogoWrapper>
         </Link>
-        <CurrencyCartWrapper>
+        {/* currency and cart  */}
+        <CurrencyCartWrapper
+          ref={(node) => {
+            this.node = node;
+          }}
+        >
           <div className="content">
             {this.state.iscurrencyDroprdownOpen && (
               <CurrencyDropdown>
@@ -87,11 +140,14 @@ class Navbar extends Component {
                 />
               </DropdownArrow>
             </p>
-            <Link to="/cart">
-            <Cart count={cartCount}>
+            <Cart count={cartCount} onClick={this.toggleOverlay}>
               <img src={cart} alt="" />
-            </Cart></Link>
+            </Cart>
           </div>
+          {/* cart overlay  */}
+          {this.state.isCartOverlayOpen && (
+            <CartOverlay count={cartCount} toggle={this.toggleOverlay} />
+          )}
         </CurrencyCartWrapper>
       </NavWrapper>
     );
