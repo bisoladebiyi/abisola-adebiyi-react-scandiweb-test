@@ -738,7 +738,7 @@ export const ClearCart = styled.button`
 all: unset;
 color: red;
 float: right;
-margin-top: 10px;
+margin: 10px 0 20px;
 cursor: pointer;
 font-weight: 600;
 `
