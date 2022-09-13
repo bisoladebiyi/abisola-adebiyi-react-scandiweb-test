@@ -148,6 +148,7 @@ export const Cart = styled.figure`
   }
 
   &::before {
+    visibility: ${props => props.count === 0 ? "hidden" : "visible"};
     position: absolute;
     top: -11px;
     right: -10px;
@@ -236,10 +237,8 @@ export const Product = styled.div`
   figure {
     position: relative;
     width: 100%;
-    height: 330px;
     img {
       width: 100%;
-      height: 100%;
       object-fit: cover;
       object-position: start;
     }
@@ -314,6 +313,15 @@ export const ProductImagesWrapper = styled.div`
     width: 100%;
   }
 `;
+
+export const ProductMiniImagesWrapper = styled.div`
+max-height: 500px;
+overflow-y: scroll;
+overflow-x: hidden;
+@media (max-width: ${screens.sm}) {
+  max-height: 400px;
+}
+`
 
 export const SmallImg = styled.figure`
   width: 75px;
@@ -477,8 +485,9 @@ export const ProductPriceWrapper = styled.div`
 export const AddToCart = styled.button`
   all: unset;
   background: ${(props) =>
-    props.inCart ? colors.primary_deep : colors.primary};
-  color: #fff;
+    props.outOfStock ? colors.gray : colors.primary};
+  color: ${(props) =>
+    props.outOfStock ? colors.dark : "#fff"};
   text-transform: uppercase;
   width: 100%;
   padding: 15px 0;
@@ -497,9 +506,9 @@ export const RemoveBtn = styled.button`
   top: 1px;
   background: ${colors.dark};
   color: #fff;
-  padding: 3px;
+  padding: 0 4px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 16px;
 `;
 export const CartHeading = styled.h1`
   font-weight: 700;
@@ -724,6 +733,15 @@ export const CartSummary = styled.div`
     font-weight: 500;
   }
 `;
+
+export const ClearCart = styled.button`
+all: unset;
+color: red;
+float: right;
+margin: 10px 0 20px;
+cursor: pointer;
+font-weight: 600;
+`
 
 export const OrderBtn = styled.button`
   all: unset;

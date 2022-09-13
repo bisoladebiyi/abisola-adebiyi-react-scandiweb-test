@@ -2,19 +2,30 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import SingleCartItem from "../components/SingleCartItem";
-import { handleItemQuantity, removeFromCart } from "../redux/feature/cartSlice";
+import {
+  clearCart,
+  handleItemQuantity,
+  removeFromCart,
+} from "../redux/feature/cartSlice";
 import {
   CartHeading,
   CartItemsWrapper,
   CartSummary,
+  ClearCart,
   EmptyStateText,
   OrderBtn,
 } from "../utils/styledComponents";
 
 class Cart extends Component {
   render() {
-    const { cart, currency, qtyTotal, handleItemQuantity, removeFromCart } =
-      this.props;
+    const {
+      cart,
+      currency,
+      qtyTotal,
+      handleItemQuantity,
+      removeFromCart,
+      clearCart,
+    } = this.props;
     let total = 0;
     cart.map(({ qty, prices }) => {
       let price = prices.find((x) => x.currency.symbol === currency);
@@ -43,6 +54,7 @@ class Cart extends Component {
               gallery,
               attributes,
               category,
+              selected,
             }) => {
               let price = prices.find((x) => x.currency.symbol === currency);
               return (
@@ -60,17 +72,21 @@ class Cart extends Component {
                   cart={cart}
                   category={category}
                   removeFromCart={removeFromCart}
+                  selected={selected}
                 />
               );
             }
           )}
         </CartItemsWrapper>
+        {cart.length > 0 && (
+          <ClearCart onClick={clearCart}>Clear Cart</ClearCart>
+        )}
         <CartSummary>
           <p>
             Tax 21%:
             <span>
               {currency}
-              {total * 0.21}
+              {(total * 0.21).toFixed(2)}
             </span>
           </p>
           <p>
@@ -106,6 +122,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     handleItemQuantity: (data) => dispatch(handleItemQuantity(data)),
     removeFromCart: (id) => dispatch(removeFromCart(id)),
+    clearCart: () => dispatch(clearCart()),
   };
 };
 

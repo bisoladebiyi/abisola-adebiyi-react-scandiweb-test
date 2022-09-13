@@ -4,6 +4,23 @@ export const GET_CATEGORIES = gql`
   query GetCategories {
     categories {
       name
+    }
+  }
+`;
+
+export const GET_CURRENCIES = gql`
+  query GetCurrencies {
+    currencies {
+      label
+      symbol
+    }
+  }
+`;
+
+export const GET_PRODUCTS = gql`
+  query GetProducts($input: CategoryInput) {
+    category(input: $input) {
+      name
       products {
         id
         name

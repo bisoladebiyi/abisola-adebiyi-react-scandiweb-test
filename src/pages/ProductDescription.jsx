@@ -10,6 +10,7 @@ import {
   ProductColors,
   ProductContent,
   ProductImagesWrapper,
+  ProductMiniImagesWrapper,
   ProductPriceWrapper,
   ProductSizes,
   ProductWrapper,
@@ -18,6 +19,7 @@ import {
 } from "../utils/styledComponents";
 import { connect } from "react-redux";
 import { addToCart, removeFromCart } from "../redux/feature/cartSlice";
+import { v4 as uuid } from "uuid";
 
 class ProductDescription extends Component {
   constructor() {
@@ -26,6 +28,7 @@ class ProductDescription extends Component {
       selectedAttr: {},
       mainImg: "",
     };
+    this.date = new Date();
   }
   // get selected attributes, set default display img on component mount
   componentDidMount() {
@@ -70,17 +73,14 @@ class ProductDescription extends Component {
   }
   // add or remove from cart
   handleCartItem(id, data, isInCart) {
-    if (isInCart) {
-      this.props.removeFromCart(id);
-    } else {
-      this.props.addToCart(data);
-    }
+    this.props.addToCart(data);
   }
 
   render() {
-    const { data, currency, cartItemIds } = this.props;
+    const { data, currency } = this.props;
     const { mainImg, selectedAttr } = this.state;
     const { product } = data;
+    const uid = uuid();
     let price = product?.prices.find((x) => x.currency.symbol === currency); // find price based on currency
 
     return (
@@ -89,17 +89,19 @@ class ProductDescription extends Component {
           <ProductWrapper>
             {/* images  */}
             <ProductImagesWrapper>
-              <div>
-                {product.gallery.map((img) => (
-                  <SmallImg
-                    key={img}
-                    onClick={() => this.selectImg(img)}
-                    selected={img === mainImg}
-                  >
-                    <img src={img} alt="" />
-                  </SmallImg>
-                ))}
-              </div>
+              <ProductMiniImagesWrapper>
+                <div>
+                  {product.gallery.map((img) => (
+                    <SmallImg
+                      key={img}
+                      onClick={() => this.selectImg(img)}
+                      selected={img === mainImg}
+                    >
+                      <img src={img} alt="" />
+                    </SmallImg>
+                  ))}
+                </div>
+              </ProductMiniImagesWrapper>
               <LargeImg>
                 <img src={mainImg} alt="" />
               </LargeImg>
@@ -160,27 +162,23 @@ class ProductDescription extends Component {
                 <h4>PRICE:</h4>
                 <p>
                   {currency}
-                  {price.amount}
+                  {price.amount.toFixed(2)}
                 </p>
               </ProductPriceWrapper>
               {/* add or remove from cart button  */}
               <AddToCart
                 onClick={() =>
-                  this.handleCartItem(
-                    product.id,
-                    {
-                      ...product,
-                      qty: 1,
-                      selected: this.state.selectedAttr,
-                    },
-                    cartItemIds.includes(product.id)
-                  )
+                  this.handleCartItem(product.id + uid, {
+                    ...product,
+                    id: product.id + uid,
+                    qty: 1,
+                    selected: this.state.selectedAttr,
+                  })
                 }
-                inCart={cartItemIds.includes(product.id)}
+                disabled={!product.inStock}
+                outOfStock={!product.inStock}
               >
-                {cartItemIds.includes(product.id)
-                  ? "remove from cart"
-                  : "add to cart"}
+                {!product.inStock ? "out of stock" : "add to cart"}
               </AddToCart>
               <div className="desc">{parse(product.description)}</div>
             </ProductContent>

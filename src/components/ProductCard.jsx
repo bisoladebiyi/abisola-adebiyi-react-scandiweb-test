@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { AddToCartBtn, Product } from "../utils/styledComponents";
+import { v4 as uuid } from "uuid";
 
 class ProductCard extends Component {
     // add or remove from cart 
@@ -15,6 +16,7 @@ class ProductCard extends Component {
     const { cartItemIds, product, currency } = this.props;
     const { id, name, prices, gallery, brand, inStock } = product;
     let rightPrice = prices.find((x) => x.currency.symbol === currency);  // get correct price based on currency
+    const uid = uuid();
     return (
       <Product inStock={inStock}>
         <figure>
@@ -22,9 +24,10 @@ class ProductCard extends Component {
          <Link to="#"><AddToCartBtn
             added={cartItemIds?.includes(id)}
             onClick={() => this.handleCartItem(
-                product.id,
+                product.id + uid,
                 {
                   ...product,
+                  id:  product.id + uid,
                   qty: 1,
                   selected: {},
                 },
@@ -78,7 +81,7 @@ class ProductCard extends Component {
         </p>
         <p className="price">
           <span>{currency}</span>
-          {rightPrice?.amount}
+          {rightPrice?.amount.toFixed(2)}
         </p>
       </Product>
     );

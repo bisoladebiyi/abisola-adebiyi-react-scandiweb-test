@@ -17,16 +17,22 @@ const cartSlice = createSlice({
       state.cartCount = state.cartCount + 1;
       state.cartItemIds = [...state.cartItemIds, payload.payload.id];
       state.qtyTotal = state.qtyTotal + payload.payload.qty;
+      alert("Added to cart!");
     },
     removeFromCart(state, payload) {
       let removedItem = state.cart.find((item) => item.id === payload.payload);
-
       state.cart = state.cart.filter((item) => item.id !== payload.payload);
       state.cartCount = state.cartCount - 1;
       state.cartItemIds = state.cartItemIds.filter(
         (item) => item !== payload.payload
       );
       state.qtyTotal = state.qtyTotal - removedItem?.qty;
+    },
+    clearCart(state) {
+      state.cart = [];
+      state.cartCount = 0;
+      state.qtyTotal = 0;
+      state.cartItemIds = [];
     },
     updateAttr(state, payload) {
       let cartItem = state.cart.find((item) => item.id === payload.payload.id);
@@ -59,6 +65,7 @@ export const {
   handleItemQuantity,
   removeFromCart,
   updateAttr,
+  clearCart,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;
