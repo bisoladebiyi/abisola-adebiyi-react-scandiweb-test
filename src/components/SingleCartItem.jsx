@@ -1,7 +1,5 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { updateAttr } from "../redux/feature/cartSlice";
 import {
   CartItem,
   ColorBtn,
@@ -39,11 +37,11 @@ class SingleCartItem extends Component {
   componentDidUpdate(prevProps) {
     if (prevProps !== this.props) {
       let product = this.props.cart?.find((x) => x.id === this.props.id);
-      this.setState({
-        selectedAttr: product?.selected
-          ? product?.selected
-          : this.state.selectedAttr,
-      });
+    this.setState({
+      selectedAttr: product?.selected
+        ? product?.selected
+        : this.state.selectedAttr,
+    });
     }
   }
   //   handle image slider
@@ -75,7 +73,6 @@ class SingleCartItem extends Component {
       gallery,
       handleItemQuantity,
       attributes,
-      updateAttr,
       category,
       overlay,
       removeFromCart,
@@ -83,9 +80,7 @@ class SingleCartItem extends Component {
     const { selectedAttr, imgIndex } = this.state;
     return (
       <CartItem overlay={overlay}>
-        {!overlay && (
-          <RemoveBtn onClick={() => removeFromCart(id)}>X</RemoveBtn>
-        )}
+          <RemoveBtn onClick={() => removeFromCart(id)} overlay={overlay}>-</RemoveBtn>
         <ItemInfo overlay={overlay}>
           <Link to={`/${category}/${id}`}>
             <div>
@@ -95,7 +90,7 @@ class SingleCartItem extends Component {
           </Link>
           <p className="price">
             {currency}
-            {price.amount * qty}
+            {(price.amount * qty).toFixed(2)}
           </p>
           {attributes.map((attr, i) => {
             return attr.id !== "Color" ? (
@@ -109,9 +104,6 @@ class SingleCartItem extends Component {
                   {attr.items.map((item, i) => (
                     <SizeBtn
                       overlay={overlay}
-                      onClick={() =>
-                        updateAttr({ id, newAttr: { [attr.id]: item.id } })
-                      }
                       selected={
                         selectedAttr[attr.id]
                           ? selectedAttr[attr.id] === item.id
@@ -136,9 +128,6 @@ class SingleCartItem extends Component {
                   {attr.items.map((item, i) => (
                     <ColorBtn
                       overlay={overlay}
-                      onClick={() =>
-                        updateAttr({ id, newAttr: { [attr.id]: item.id } })
-                      }
                       color={item.value}
                       selected={
                         selectedAttr[attr.id]
@@ -218,9 +207,5 @@ class SingleCartItem extends Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    updateAttr: (data) => dispatch(updateAttr(data)),
-  };
-};
-export default connect(null, mapDispatchToProps)(SingleCartItem);
+
+export default SingleCartItem;

@@ -32,34 +32,44 @@ class Navbar extends Component {
   }
 
   toggleDropdown() {
-    if (!this.state.iscurrencyDroprdownOpen) {
-      document.addEventListener("click", this.handleOutsideClick, false);
-    } else {
-      document.removeEventListener("click", this.handleOutsideClick, false);
-    }
     this.setState({
       ...this.state,
       iscurrencyDroprdownOpen: !this.state.iscurrencyDroprdownOpen,
+      isCartOverlayOpen: false,
     });
   }
 
   toggleOverlay() {
-    if (!this.state.isCartOverlayOpen) {
-      document.addEventListener("click", this.handleOutsideClick, false);
-    } else {
-      document.removeEventListener("click", this.handleOutsideClick, false);
-    }
     this.setState({
       ...this.state,
       isCartOverlayOpen: !this.state.isCartOverlayOpen,
+      iscurrencyDroprdownOpen: false,
     });
   }
+  componentDidMount() {
+    document.addEventListener("click", this.handleOutsideClick, true);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("click", this.handleOutsideClick, true);
+  }
+
   //function for click out logic
-  handleOutsideClick = (e) => {
-    if (!this.node.contains(e.target) && !this.state.iscurrencyDroprdownOpen)
-      this.toggleOverlay();
-    if (!this.node.contains(e.target) && !this.state.isCartOverlayOpen)
-      this.toggleDropdown();
+  handleOutsideClick = (event) => {
+    if (
+      this.node &&
+      !this.node.contains(event.target) &&
+      !this.state.iscurrencyDroprdownOpen
+    ) {
+      this.setState({ ...this.state, isCartOverlayOpen: false });
+    }
+    if (
+      this.node &&
+      !this.node.contains(event.target) &&
+      !this.state.isCartOverlayOpen
+    ) {
+      this.setState({ ...this.state, iscurrencyDroprdownOpen: false });
+    }
   };
 
   toggleMenu() {
@@ -88,7 +98,7 @@ class Navbar extends Component {
         </MenuBar>
         <CategoryList isMenuOpen={this.state.isMenuOpen}>
           {categories?.map((cat, i) => (
-            <Link to={`/${cat === "all" ? "" : cat}`} key={i}>
+            <Link to={`/${i === 0 ? "" : cat}`} key={i}>
               <CategoryListItem
                 onClick={this.toggleMenu}
                 active={active === cat ? true : false}
@@ -105,22 +115,20 @@ class Navbar extends Component {
           </LogoWrapper>
         </Link>
         {/* currency and cart  */}
-        <CurrencyCartWrapper
-          ref={(node) => {
-            this.node = node;
-          }}
-        >
+        <CurrencyCartWrapper ref={(node) => (this.node = node)}>
           <div className="content">
             {this.state.iscurrencyDroprdownOpen && (
-              <CurrencyDropdown>
-                <ul>
-                  {currencies.map(({ label, symbol }) => (
-                    <li key={symbol} onClick={() => changeCurrency(symbol)}>
-                      {symbol} {label}
-                    </li>
-                  ))}
-                </ul>
-              </CurrencyDropdown>
+              <div ref={(node) => (this.node = node)}>
+                <CurrencyDropdown>
+                  <ul>
+                    {currencies.map(({ label, symbol }) => (
+                      <li key={symbol} onClick={() => changeCurrency(symbol)}>
+                        {symbol} {label}
+                      </li>
+                    ))}
+                  </ul>
+                </CurrencyDropdown>
+              </div>
             )}
             <p onClick={this.toggleDropdown}>
               {currency}
@@ -146,7 +154,9 @@ class Navbar extends Component {
           </div>
           {/* cart overlay  */}
           {this.state.isCartOverlayOpen && (
-            <CartOverlay count={cartCount} toggle={this.toggleOverlay} />
+            <div ref={(node) => (this.node = node)}>
+              <CartOverlay count={cartCount} toggle={this.toggleOverlay} />
+            </div>
           )}
         </CurrencyCartWrapper>
       </NavWrapper>

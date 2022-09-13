@@ -31,13 +31,6 @@ class App extends Component {
   render() {
     const { data } = this.props;
     const categories = data.categories?.map((cat) => cat.name); //get list of categories
-    const currencies =
-      data.categories &&
-      data.categories[0].products[0].prices.map((price) => ({
-        symbol: price.currency.symbol,
-        label: price.currency.label,
-      })); // get list of currencies
-
     return (
       <BrowserRouter>
         {data.loading ? (
@@ -45,20 +38,18 @@ class App extends Component {
         ) : (
           <Layout
             categories={categories}
-            currencies={currencies}
             active={this.state.activeCategory}
           >
             <div className="main">
               <Routes>
-                {this.props.data?.categories?.map((cat, i) => (
+                {this.props.data?.categories.map((cat, i) => (
                   <Route
                     key={i}
                     exact
-                    path={cat.name === "all" ? "/" : `/${cat.name}`}
+                    path={i === 0 ? "/" : `/${cat.name}`}
                     element={
                       <ProductList
                         categoryName={cat.name}
-                        products={cat.products}
                         handleActiveCategory={this.handleActiveCategory}
                       />
                     }

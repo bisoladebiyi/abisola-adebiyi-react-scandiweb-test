@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { graphql } from "@apollo/client/react/hoc";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import { addToCart, removeFromCart } from "../redux/feature/cartSlice";
+import { GET_PRODUCTS } from "../utils/queries";
 import { CategoryTitle, ProductGrid } from "../utils/styledComponents";
 
 class ProductList extends Component {
@@ -14,40 +16,25 @@ class ProductList extends Component {
     }
   }
   render() {
-    const {
-      categoryName,
-      products,
-      currency,
-      addToCart,
-      removeFromCart,
-      cartItemIds,
-    } = this.props;
-
+    const { currency, addToCart, removeFromCart, cartItemIds, data } =
+      this.props;
+    const { category } = data;
     return (
       <div>
-        <CategoryTitle>{categoryName}</CategoryTitle>
+        <CategoryTitle>{category?.name}</CategoryTitle>
         <ProductGrid>
           {currency &&
-            products?.map((product) =>
-              product.inStock ? (
-                <Link to={`/${categoryName}/${product.id}`} key={product.id}>
-                  <ProductCard
-                    product={product}
-                    cartItemIds={cartItemIds}
-                    addToCart={addToCart}
-                    currency={currency}
-                    removeFromCart={removeFromCart}
-                  />
-                </Link>
-              ) : (
+            category?.products?.map((product) => (
+              <Link to={`/${category?.name}/${product.id}`} key={product.id}>
                 <ProductCard
-                  key={product.id}
                   product={product}
                   cartItemIds={cartItemIds}
+                  addToCart={addToCart}
                   currency={currency}
+                  removeFromCart={removeFromCart}
                 />
-              )
-            )}
+              </Link>
+            ))}
         </ProductGrid>
       </div>
     );
@@ -68,4 +55,15 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProductList);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(
+  graphql(GET_PRODUCTS, {
+    options: (props) => ({
+      variables: {
+        input: { title: props.categoryName },
+      },
+    }),
+  })(ProductList)
+);

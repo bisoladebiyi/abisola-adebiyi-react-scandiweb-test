@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { handleItemQuantity } from "../redux/feature/cartSlice";
+import { handleItemQuantity, removeFromCart } from "../redux/feature/cartSlice";
 import {
   ActionButtonsWrapper,
   CartItemsWrapper,
@@ -12,40 +12,68 @@ import SingleCartItem from "./SingleCartItem";
 
 class CartOverlay extends Component {
   render() {
-    const { cart, currency, count, handleItemQuantity, toggle } = this.props;
+    const {
+      cart,
+      currency,
+      count,
+      handleItemQuantity,
+      toggle,
+      cartRef,
+      removeFromCart,
+    } = this.props;
     let total = 0;
     cart?.map(({ qty, prices }) => {
       let price = prices.find((x) => x.currency.symbol === currency);
       return (total = total + price.amount * qty);
     });
     return (
-      <OverlayWrapper>
+      <OverlayWrapper ref={cartRef}>
         <h2>
-          My Bag, <span>{count} item{count === 1 ? "" : "s"}</span>
+          My Bag,{" "}
+          <span>
+            {count} item{count === 1 ? "" : "s"}
+          </span>
         </h2>
         <CartItemsWrapper overlay={true}>
-            {cart.length === 0 && <p className="empty">Nothing to see here... <span>*inserts blowing breeze*</span></p>}
+          {cart.length === 0 && (
+            <p className="empty">
+              Nothing to see here... <span>*inserts blowing breeze*</span>
+            </p>
+          )}
           {cart
             ?.slice(0, 2)
-            .map(({ id, name, brand, prices, qty, gallery, attributes }) => {
-              let price = prices.find((x) => x.currency.symbol === currency);
-              return (
-                <SingleCartItem
-                  key={id}
-                  price={price}
-                  id={id}
-                  currency={currency}
-                  handleItemQuantity={handleItemQuantity}
-                  name={name}
-                  brand={brand}
-                  qty={qty}
-                  gallery={gallery}
-                  attributes={attributes}
-                  cart={cart}
-                  overlay={true}
-                />
-              );
-            })}
+            .map(
+              ({
+                id,
+                name,
+                brand,
+                prices,
+                qty,
+                gallery,
+                attributes,
+                category,
+              }) => {
+                let price = prices.find((x) => x.currency.symbol === currency);
+                return (
+                  <SingleCartItem
+                    key={id}
+                    price={price}
+                    id={id}
+                    currency={currency}
+                    handleItemQuantity={handleItemQuantity}
+                    name={name}
+                    brand={brand}
+                    qty={qty}
+                    gallery={gallery}
+                    attributes={attributes}
+                    cart={cart}
+                    overlay={true}
+                    category={category}
+                    removeFromCart={removeFromCart}
+                  />
+                );
+              }
+            )}
         </CartItemsWrapper>
         <Total>
           <p>Total</p>
@@ -56,10 +84,12 @@ class CartOverlay extends Component {
         </Total>
         <ActionButtonsWrapper>
           <Link to="/cart">
-            <button className="cart" onClick={toggle}>view bag</button>
+            <button className="cart" onClick={toggle}>
+              view bag
+            </button>
           </Link>
           <button
-          className="checkout"
+            className="checkout"
             onClick={() => {
               toggle();
               alert("End of the road");
@@ -84,6 +114,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     handleItemQuantity: (data) => dispatch(handleItemQuantity(data)),
+    removeFromCart: (id) => dispatch(removeFromCart(id)),
   };
 };
 
