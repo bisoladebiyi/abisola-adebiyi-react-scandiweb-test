@@ -506,9 +506,9 @@ export const RemoveBtn = styled.button`
   top: 1px;
   background: ${colors.dark};
   color: #fff;
-  padding: ${props => props.overlay ? "0px 4px" : "3px"};
+  padding: 0 4px;
   cursor: pointer;
-  font-size: ${props => props.overlay ? "16px" : "12px"};
+  font-size: 16px;
 `;
 export const CartHeading = styled.h1`
   font-weight: 700;

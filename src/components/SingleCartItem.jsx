@@ -80,7 +80,7 @@ class SingleCartItem extends Component {
     const { selectedAttr, imgIndex } = this.state;
     return (
       <CartItem overlay={overlay}>
-          <RemoveBtn onClick={() => removeFromCart(id)} overlay={overlay}>-</RemoveBtn>
+          <RemoveBtn onClick={() => removeFromCart(id)}>-</RemoveBtn>
         <ItemInfo overlay={overlay}>
           <Link to={`/${category}/${id}`}>
             <div>
