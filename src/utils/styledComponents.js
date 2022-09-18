@@ -3,6 +3,7 @@ import { colors, screens, spacing } from "../styles/_vars";
 
 // for layout
 export const AppWrapper = styled.div`
+  margin: 0 auto;
   max-width: 1600px;
 `;
 export const MainContent = styled.main`
@@ -148,7 +149,7 @@ export const Cart = styled.figure`
   }
 
   &::before {
-    visibility: ${props => props.count === 0 ? "hidden" : "visible"};
+    visibility: ${(props) => (props.count === 0 ? "hidden" : "visible")};
     position: absolute;
     top: -11px;
     right: -10px;
@@ -315,13 +316,13 @@ export const ProductImagesWrapper = styled.div`
 `;
 
 export const ProductMiniImagesWrapper = styled.div`
-max-height: 500px;
-overflow-y: scroll;
-overflow-x: hidden;
-@media (max-width: ${screens.sm}) {
-  max-height: 400px;
-}
-`
+  max-height: 500px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  @media (max-width: ${screens.sm}) {
+    max-height: 400px;
+  }
+`;
 
 export const SmallImg = styled.figure`
   width: 75px;
@@ -484,10 +485,8 @@ export const ProductPriceWrapper = styled.div`
 
 export const AddToCart = styled.button`
   all: unset;
-  background: ${(props) =>
-    props.outOfStock ? colors.gray : colors.primary};
-  color: ${(props) =>
-    props.outOfStock ? colors.dark : "#fff"};
+  background: ${(props) => (props.outOfStock ? colors.gray : colors.primary)};
+  color: ${(props) => (props.outOfStock ? colors.dark : "#fff")};
   text-transform: uppercase;
   width: 100%;
   padding: 15px 0;
@@ -520,6 +519,8 @@ export const CartItemsWrapper = styled.div`
   border-top: 1px solid
     ${(props) => (props.overlay ? "transparent" : "#e5e5e5")};
   margin-top: ${(props) => (props.overlay ? "0" : "50px")};
+  max-height: ${(props) => (props.overlay ? "400px" : "auto")};
+  overflow-y: auto;
 
   .brand,
   .name {
@@ -735,13 +736,13 @@ export const CartSummary = styled.div`
 `;
 
 export const ClearCart = styled.button`
-all: unset;
-color: red;
-float: right;
-margin: 10px 0 20px;
-cursor: pointer;
-font-weight: 600;
-`
+  all: unset;
+  color: red;
+  float: right;
+  margin: 10px 0 20px;
+  cursor: pointer;
+  font-weight: 600;
+`;
 
 export const OrderBtn = styled.button`
   all: unset;

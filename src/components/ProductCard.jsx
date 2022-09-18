@@ -28,6 +28,7 @@ class ProductCard extends Component {
                 {
                   ...product,
                   id:  product.id + uid,
+                  product_id: product.id,
                   qty: 1,
                   selected: {},
                 },

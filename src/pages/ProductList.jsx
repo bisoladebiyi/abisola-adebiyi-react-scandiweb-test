@@ -9,6 +9,10 @@ import { CategoryTitle, ProductGrid } from "../utils/styledComponents";
 
 class ProductList extends Component {
   // set active category
+  componentDidMount() {
+    let catName = this.props.categoryName;
+    this.props.handleActiveCategory(catName);
+  }
   componentDidUpdate(prevProps) {
     if (prevProps.categoryName !== this.props.categoryName) {
       let catName = this.props.categoryName;

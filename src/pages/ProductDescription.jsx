@@ -171,6 +171,7 @@ class ProductDescription extends Component {
                   this.handleCartItem(product.id + uid, {
                     ...product,
                     id: product.id + uid,
+                    product_id: product.id,
                     qty: 1,
                     selected: this.state.selectedAttr,
                   })
