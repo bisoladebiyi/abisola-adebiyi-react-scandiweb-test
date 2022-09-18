@@ -55,6 +55,7 @@ class Cart extends Component {
               attributes,
               category,
               selected,
+              product_id
             }) => {
               let price = prices.find((x) => x.currency.symbol === currency);
               return (
@@ -62,6 +63,7 @@ class Cart extends Component {
                   key={id}
                   price={price}
                   id={id}
+                  product_id={product_id}
                   currency={currency}
                   handleItemQuantity={handleItemQuantity}
                   name={name}

@@ -40,9 +40,7 @@ class CartOverlay extends Component {
               Nothing to see here... <span>*inserts blowing breeze*</span>
             </p>
           )}
-          {cart
-            ?.slice(0, 2)
-            .map(
+          {cart?.map(
               ({
                 id,
                 name,
@@ -52,6 +50,7 @@ class CartOverlay extends Component {
                 gallery,
                 attributes,
                 category,
+                product_id
               }) => {
                 let price = prices.find((x) => x.currency.symbol === currency);
                 return (
@@ -59,6 +58,7 @@ class CartOverlay extends Component {
                     key={id}
                     price={price}
                     id={id}
+                    product_id={product_id}
                     currency={currency}
                     handleItemQuantity={handleItemQuantity}
                     name={name}
@@ -70,6 +70,7 @@ class CartOverlay extends Component {
                     overlay={true}
                     category={category}
                     removeFromCart={removeFromCart}
+                    toggle={toggle}
                   />
                 );
               }

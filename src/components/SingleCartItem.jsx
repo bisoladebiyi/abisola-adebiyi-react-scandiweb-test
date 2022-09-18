@@ -65,6 +65,7 @@ class SingleCartItem extends Component {
   render() {
     const {
       id,
+      product_id,
       brand,
       name,
       currency,
@@ -76,13 +77,16 @@ class SingleCartItem extends Component {
       category,
       overlay,
       removeFromCart,
+      toggle
     } = this.props;
     const { selectedAttr, imgIndex } = this.state;
     return (
       <CartItem overlay={overlay}>
           <RemoveBtn onClick={() => removeFromCart(id)}>-</RemoveBtn>
         <ItemInfo overlay={overlay}>
-          <Link to={`/${category}/${id}`}>
+          <Link to={`/${category}/${product_id}`} onClick={() => {
+            toggle()
+          }}>
             <div>
               <h2 className="brand">{brand}</h2>
               <h2 className="name">{name}</h2>
